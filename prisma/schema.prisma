@@ -1,0 +1,42 @@
+// Prisma schema for Personal Notes API
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  notes Note[]
+
+  @@map("users")
+}
+
+model Note {
+  id         String   @id @default(uuid())
+  title      String
+  content    String   @db.Text
+  tags       Json     @default("[]")
+  isPinned   Boolean  @default(false) @map("is_pinned")
+  isArchived Boolean  @default(false) @map("is_archived")
+  isDeleted  Boolean  @default(false) @map("is_deleted")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([title])
+  @@map("notes")
+}
