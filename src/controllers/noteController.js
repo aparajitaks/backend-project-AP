@@ -72,10 +72,11 @@ const getNotes = async (req, res, next) => {
       isDeleted: false,
     };
 
-    // Search by title (MySQL default collation is case-insensitive)
+    // Search by title (case-insensitive for PostgreSQL)
     if (search) {
       where.title = {
         contains: search,
+        mode: "insensitive",
       };
     }
 
